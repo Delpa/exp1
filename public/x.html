@@ -51,7 +51,7 @@
 </style>
 
 </head>
-<body onload="init_gn()">
+<body onload="init_gn()" >
 
   <div class="container">
 
@@ -166,7 +166,7 @@
 	height: 100px;
 	width: 100px;
 	margin:0 auto;
-	transform: rotateX(0deg); 
+	transform: rotateX(0deg);
 	perspective:100px;
 	position:relative;
 ">
@@ -183,7 +183,7 @@
 
  <script type="text/javascript">
   var socket = io();
-  var gn;  
+  var gn;
   var Y={
     quiescent:0,
     time:0,
@@ -226,7 +226,7 @@
 
         if(!isAvailable.accelerationIncludingGravityAvailable) {
           logger({message:'Device acceleration incl. gravity is not available.'});
-        } 
+        }
 
         if(!isAvailable.rotationRateAvailable) {
           logger({message:'Device rotation rate is not available.'});
@@ -236,7 +236,7 @@
       }).catch(function(e){
 
         console.log(e);
-        
+
       });
     }
 
@@ -300,7 +300,7 @@
     function gnCallBack(data) {
 //('#do_alpha').val(data.do.alpha)
       //$('#do_alpha').val(data.do.alpha);
-      //$('#do_beta').val(data.do.beta +" -- "+ quietoY +"  "+ quietoX ); 
+      //$('#do_beta').val(data.do.beta +" -- "+ quietoY +"  "+ quietoX );
       //$('#do_gamma').val(data.do.gamma);
 
 
@@ -309,10 +309,24 @@ texto+=" rotateX("+(-data.do.beta)+"deg)";
 texto+=" rotateY("+(data.do.gamma)+"deg)";
 texto+=" rotateZ("+(-data.do.alpha)+"deg)";
 
+var request = {
+  //successY:dataY.success,
+  //positionY:dataY.position,
+  //successX:dataX.success,
+  //positionX:dataX.position,
+  text:texto,
+};
+
+socket.emit('posXY', request);
+
+
 		var minimumRange=0.40;
         var dataY=positionAxis(Y,data.dm.y,minimumRange),
         	dataX=positionAxis(X,-data.dm.x,minimumRange);
-        
+
+//$('#test').css({"left":((dataX.position*1000))})
+
+        /*
         if(dataY.success || dataX.success)	{
 
 	        var request = {
@@ -331,14 +345,15 @@ texto+=" rotateZ("+(-data.do.alpha)+"deg)";
         }
        // $('#do_alpha').val("a: "+axis.aceleration+"  v: "+axis.velocity+"  d: "+(axis.position*1000));
 //     $('#test').css({"left":(-lefte)});
+*/
 
 
 
 
 
 
+$('#test').css({"transform":texto});
 
-           
 //$('#test').css({"transform":"scaleY("+1/(Math.cos(  (-data.do.beta+90) * Math.PI/180) )+")"});
       $('#dm_x').val(data.dm.x);
       $('#dm_y').val(data.dm.y);
@@ -418,10 +433,15 @@ texto+=" rotateZ("+(-data.do.alpha)+"deg)";
 
   function posXY (data) {
   	console.log(data);
-  	console.log(data.message.successY);
-  	console.log((data.message.positionY*1000));
-  	(data.message.successY)?$('#test').css({"top":(data.message.positionY*1000)}):'';
-  	(data.message.successX)?$('#test').css({"left":(data.message.positionX*1000)}):'';
+  	//console.log(data.message.successY);
+  	//console.log((data.message.positionY*1000));
+  	//(data.message.successY)?$('#test').css({"top":(data.message.positionY*1000)}):'';
+  	//(data.message.successX)?$('#test').css({"left":(data.message.positionX*1000)}):'';
+  	//(data.message.successX)?$('#test').css({"left":(data.message.positionX*1000)}):'';
+    $('#test').css({"transform":data.message.text});
+    $('#testBody').css({"transform":data.message.text});
+
+
   }
 
   // Whenever the server emits 'new message', update the chat body
